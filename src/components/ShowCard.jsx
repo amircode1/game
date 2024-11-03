@@ -1,6 +1,5 @@
 import Slider from "react-slick";
 import { useGames } from "../hooks/useQueries";
-import { useInView } from "react-intersection-observer";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import { Spinner } from "@nextui-org/react";
@@ -10,7 +9,7 @@ function ShowCard() {
     const settings = {
         infinite: true,
         speed: 500,
-        slidesToShow: 1,  // هر بار فقط یک اسلاید نمایش داده شود
+        slidesToShow: 1,
         slidesToScroll: 1,
         responsive: [
             { breakpoint: 1024, settings: { slidesToShow: 1, slidesToScroll: 1, infinite: true } },
@@ -19,15 +18,8 @@ function ShowCard() {
         ]
     };
 
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useGames("relevance");
-    const { ref, inView } = useInView();
+    const { data} = useGames("relevance");
 
-    // Fetch next page when inView
-    React.useEffect(() => {
-        if (inView && hasNextPage) {
-            fetchNextPage();
-        }
-    }, [inView, hasNextPage, fetchNextPage]);
 
     if (!data) return <Spinner className="w-full h-screen" label="Loading..." color="danger" size="3xl" />;
 
@@ -46,9 +38,6 @@ function ShowCard() {
               ))
           )}
         </Slider>
-        <div ref={ref}>
-          {isFetchingNextPage && <Spinner className="w-screen" label="Loading..." color="danger" size="3xl" />}
-        </div>
       </div>
     );
 }
