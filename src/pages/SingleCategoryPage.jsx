@@ -20,11 +20,6 @@ function SingleCategoryPage() {
         hasNextPage,
     } = useGamesBySingelCategory(categorySlug);
 
-    // Log data structure to identify potential issues
-    useEffect(() => {
-        console.log("Fetched data:", data);
-    }, [data]);
-
     // Intersection observer for infinite scroll
     const { ref, inView } = useInView();
     useEffect(() => {

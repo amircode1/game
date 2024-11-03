@@ -7,7 +7,6 @@ import { Spinner } from "@nextui-org/react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import React from "react";
-import { useState } from "react";
 
 function CategoryPage() {
     const sliderSettings = {
@@ -74,7 +73,7 @@ function CategoryPage() {
 }
 
 function CategorySection({ genre, sliderSettings }) {
-    const { data, isLoading, isError, fetchNextPage } = useGamesByCategory(genre.slug);
+    const { data, isLoading, isError} = useGamesByCategory(genre.slug);
     
     const games = data?.pages.flat() || [];
 
