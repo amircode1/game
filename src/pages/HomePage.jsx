@@ -7,6 +7,7 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, Spinner 
 import ShoppingCard from '../components/ShoppingCard';
 import ShowCard from '../components/ShowCard';
 import { useInView } from 'react-intersection-observer';
+import Modal from '../components/Modal';
 
 function HomePage() {
     const [ordering, setOrdering] = useState('relevance');
@@ -80,6 +81,7 @@ function HomePage() {
 
     return (
         <>
+            <Modal />
             <NavbarGame />
             <ShowCard />
             <ShoppingCard />
@@ -103,7 +105,7 @@ function HomePage() {
                     <DropdownItem key="metacritic">Metacritic</DropdownItem>
                 </DropdownMenu>
             </Dropdown>
-
+            
             <div className="dark grid 2xl:grid-cols-5 gap-8 px-10 sm:px-20 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {content}
                 <div ref={ref}>
