@@ -81,12 +81,11 @@ function HomePage() {
 
     return (
         <>
-            <Modal />
-            <NavbarGame />
-            <ShowCard />
-            <ShoppingCard />
-            <Dropdown>
-                <DropdownTrigger className="mx-20">
+        <NavbarGame />
+        <ShowCard />
+        <ShoppingCard />
+        <Dropdown>
+        <DropdownTrigger className="mx-20">
                     <Button variant="bordered" className="capitalize">
                         {selectedValue}
                     </Button>
@@ -112,6 +111,7 @@ function HomePage() {
                     {isFetchingNextPage ? <Spinner className="w-screen" label="Loading..." color="danger" size="3xl" /> : hasNextPage}
                 </div>
             </div>
+        <Modal />
         </>
     );
 }
