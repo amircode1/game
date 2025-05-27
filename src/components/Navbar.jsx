@@ -45,7 +45,7 @@ function NavbarGame() {
                     type="button"
                     variant="light"
                     className="px-4 py-2 bg-transparent border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white transition"
-                    onClick={() => navigate('/login')}
+                    onPress={() => navigate('/login')}
                 >
                     Login
                 </Button>
@@ -53,7 +53,7 @@ function NavbarGame() {
                     type="button"
                     variant="flat"
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                    onClick={() => navigate('/signup')}
+                    onPress={() => navigate('/signup')}
                 >
                     Sign Up
                 </Button>
@@ -65,7 +65,7 @@ function NavbarGame() {
                     type="button"
                     variant="light"
                     className="text-white"
-                    onClick={toggleMenu}
+                    onPress={toggleMenu}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -90,7 +90,7 @@ function NavbarGame() {
                         type="button"
                         variant="light"
                         className="px-4 py-2 bg-transparent border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white transition"
-                        onClick={() => navigate('/login')}
+                        onPress={() => navigate('/login')}
                     >
                         Login
                     </Button>
@@ -98,7 +98,7 @@ function NavbarGame() {
                         type="button"
                         variant="flat"
                         className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                        onClick={() => navigate('/signup')}
+                        onPress={() => navigate('/signup')}
                     >
                         Sign Up
                     </Button>

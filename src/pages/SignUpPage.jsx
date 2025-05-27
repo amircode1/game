@@ -58,7 +58,7 @@ function SignUpPage() {
                 I agree to the Terms and Conditions
               </Checkbox>
               {/* دکمه ثبت نام */}
-              <Button
+              <Button onPress={() => {}}
                 type="submit"
                 color="danger"
                 variant="bordered"

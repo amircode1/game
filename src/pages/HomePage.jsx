@@ -12,6 +12,10 @@ import Modal from '../components/Modal';
 function HomePage() {
     const [ordering, setOrdering] = useState('relevance');
     const [selectedKeys, setSelectedKeys] = useState(new Set([ordering]));
+    const [showModal, setShowModal] = useState(() => {
+        // Only show modal if not shown before
+        return localStorage.getItem('modalShown') !== 'true';
+    });
 
     const selectedValue = React.useMemo(
         () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
@@ -48,6 +52,11 @@ function HomePage() {
       }
     }, [inView, hasNextPage, fetchNextPage]);
   
+    useEffect(() => {
+        if (showModal) {
+            localStorage.setItem('modalShown', 'true');
+        }
+    }, [showModal]);
 
     let content;
 
@@ -86,7 +95,7 @@ function HomePage() {
         <ShoppingCard />
         <Dropdown>
         <DropdownTrigger className="mx-20">
-                    <Button variant="bordered" className="capitalize">
+                    <Button variant="bordered" className="capitalize" onPress={() => {}}>
                         {selectedValue}
                     </Button>
                 </DropdownTrigger>
@@ -111,7 +120,7 @@ function HomePage() {
                     {isFetchingNextPage ? <Spinner className="w-screen" label="Loading..." color="danger" size="3xl" /> : hasNextPage}
                 </div>
             </div>
-        <Modal />
+        {showModal && <Modal onClose={() => setShowModal(false)} />}
         </>
     );
 }

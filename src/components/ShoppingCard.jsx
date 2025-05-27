@@ -41,7 +41,7 @@ function ShoppingCard() {
                             <Button
                                 auto
                                 color="danger"
-                                onClick={() => dispatch(removeFromCart(item.id))}
+                                onPress={() => dispatch(removeFromCart(item.id))}
                             >
                                 Remove
                             </Button>
@@ -53,7 +53,7 @@ function ShoppingCard() {
                     <Button auto color="success" className="w-full my-2">
                         <Link to="/checkout">Proceed to Checkout</Link>
                     </Button>
-                    <Button auto color="warning" className="w-full" onClick={() => dispatch(clearCart())}>
+                    <Button auto color="warning" className="w-full" onPress={() => dispatch(clearCart())}>
                         Clear Cart
                     </Button>
                 </div>

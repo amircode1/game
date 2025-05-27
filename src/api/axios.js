@@ -1,9 +1,10 @@
 import axios from "axios";
 
 const API_KEY = import.meta.env.VITE_API_KEY;
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const api = axios.create({
-    baseURL: API_KEY
+    baseURL: BASE_URL
 })
 
 export const getDevelopers = async (pageParam = 1, option = {}) => {

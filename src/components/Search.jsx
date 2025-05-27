@@ -67,7 +67,7 @@ function Search() {
             {isDropdownOpen && searchResults.length > 0 && createPortal(
                 <div 
                     className="fixed inset-0 bg-transparent z-[9999]"
-                    onClick={() => setIsDropdownOpen(false)}
+                    onPress={() => setIsDropdownOpen(false)}
                 >
                     <div 
                         className="absolute bg-gray-900 rounded-md shadow-lg overflow-hidden"
@@ -78,7 +78,7 @@ function Search() {
                             maxWidth: '350px', 
                             maxHeight: '500px'
                         }}
-                        onClick={(e) => e.stopPropagation()}
+                        onPress={(e) => e.stopPropagation()}
                     >
                         <div className="max-h-96 overflow-y-auto flex items-center flex-col">
                             {content}

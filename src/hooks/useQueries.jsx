@@ -10,11 +10,25 @@ const createApiUrl = (endpoint, params = {}) => {
 };
 
 const fetchApi = async (url) => {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    // Get the response text first
+    const text = await response.text();
+    
+    // Try to parse as JSON
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      throw new Error(`Invalid JSON response: ${text.slice(0, 100)}...`);
+    }
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
   }
-  return response.json();
 };
 
 export const useGames = (ordering = '-released', pageSize = 12) => {

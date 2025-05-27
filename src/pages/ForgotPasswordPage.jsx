@@ -34,7 +34,7 @@ function ForgotPasswordPage() {
                 <Input type="email" label="Email" />
                 <div className="flex">
                     <Input type="text" label="code" />
-                    <Button className="h-14 ml-1" onClick={() => {countdown(number)}} disabled={isDisabled} >{text}</Button>
+                    <Button className="h-14 ml-1" onPress={() => {countdown(number)}} disabled={isDisabled} >{text}</Button>
                 </div>
                 <Button type="submit" color="danger" variant="bordered" className="text-medium h-14">submit</Button> 
               </div>  

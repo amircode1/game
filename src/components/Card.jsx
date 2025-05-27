@@ -35,7 +35,7 @@ function CardGame(props) {
                     color="danger"
                     variant="ghost"
                     style={{ color: hover ? 'white' : 'red' }}
-                    onClick={() => dispatch(addToCart(props))}
+                    onPress={() => dispatch(addToCart(props))}
                 >
                     <FaPlus />
                 </Button>
