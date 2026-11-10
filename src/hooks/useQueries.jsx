@@ -1,6 +1,8 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
-const BASE_URL = import.meta.env.VITE_API_URL;
+// FreeToGame is a public, keyless API. Hardcoded so deploys don't depend on
+// environment variables (the old RAWG VITE_API_URL may still be set on Netlify).
+const BASE_URL = 'https://www.freetogame.com/api';
 const PAGE_SIZE = 12;
 
 const fetchApi = async (endpoint) => {
