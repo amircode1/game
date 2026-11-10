@@ -110,6 +110,70 @@ export const useGamesByCategory = (category, pageSize = PAGE_SIZE) => {
 
 export const useGamesBySingelCategory = useGamesByCategory;
 
+// Map FreeToGame genre strings to valid `category` slugs.
+// Some genres (e.g. "ARPG", "RPG", "Action Game") have no matching category.
+const GENRE_TO_CATEGORY = {
+  'action': 'action',
+  'action game': 'action',
+  'action rpg': 'action-rpg',
+  'arpg': 'action-rpg',
+  'mmoarpg': 'action-rpg',
+  'rpg': 'action-rpg',
+  'dungeon crawler': 'action-rpg',
+  'battle royale': 'battle-royale',
+  'card': 'card',
+  'card game': 'card',
+  'fantasy': 'fantasy',
+  'fighting': 'fighting',
+  'mmo': 'mmo',
+  'mmorpg': 'mmorpg',
+  'mmofps': 'mmofps',
+  'moba': 'moba',
+  'racing': 'racing',
+  'shooter': 'shooter',
+  'social': 'social',
+  'sports': 'sports',
+  'strategy': 'strategy',
+  'sci-fi': 'sci-fi',
+  'open world': 'open-world',
+  'survival': 'survival',
+  'sandbox': 'sandbox',
+  'anime': 'anime',
+  'pvp': 'pvp',
+  'pve': 'pve',
+  'military': 'military',
+  'tank': 'tank',
+  'space': 'space',
+  'superhero': 'superhero',
+  'martial arts': 'martial-arts',
+  'flight': 'flight',
+  'tower defense': 'tower-defense',
+  '3d': '3d',
+  '2d': '2d',
+  'pixel': 'pixel',
+  'voxel': 'voxel',
+  'zombie': 'zombie',
+};
+
+export const genreToCategory = (genre) => {
+  if (!genre) return null;
+  return GENRE_TO_CATEGORY[genre.trim().toLowerCase()] ?? null;
+};
+
+// Lightweight list of games in a category (no pagination) for "More like this".
+export const useRelatedGames = (category, excludeId, limit = 6) => {
+  return useQuery({
+    queryKey: ['related', category, excludeId],
+    queryFn: async () => {
+      const all = await fetchApi(`/games?category=${encodeURIComponent(category)}`);
+      if (!Array.isArray(all)) return [];
+      return all.filter((game) => String(game.id) !== String(excludeId)).slice(0, limit);
+    },
+    enabled: !!category,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
 export const useSearchGames = (searchQuery) => {
   const query = (searchQuery ?? '').trim().toLowerCase();
   return useQuery({
