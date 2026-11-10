@@ -1,43 +1,49 @@
 import { useDevelopers } from './../hooks/useQueries';
 import DevCard from '../components/DevCard';
 import NavbarGame from '../components/Navbar';
-import { useInView } from 'react-intersection-observer';
-import React from 'react';
-import { Spinner } from '@nextui-org/react';
+import React, { useState } from 'react';
+import { Spinner, Button } from '@nextui-org/react';
+
+const PAGE_SIZE = 20;
 
 const DevPage = () => {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useDevelopers();
-  const { ref, inView } = useInView();
+  const { data: developers, isLoading, isError, error } = useDevelopers();
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  React.useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [inView, hasNextPage, fetchNextPage]);
+  if (isLoading) {
+    return <Spinner className="w-full h-screen" label="Loading..." color="danger" size="3xl" />;
+  }
 
-  if (!data) return <Spinner className="w-full h-screen" label="Loading..." color="danger" size="3xl" />;
+  if (isError) {
+    return <p className="text-red-500 p-8">Error: {error?.message || "Something went wrong!"}</p>;
+  }
+
+  const visible = (developers ?? []).slice(0, visibleCount);
+  const hasMore = visibleCount < (developers?.length ?? 0);
 
   return (
     <>
     <NavbarGame />
     <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4 mx-10'>
-      {data.pages.map((page, pageIndex) => (
-        <React.Fragment key={pageIndex}>
-          {page.results.map((developer) => (
-            <DevCard
-            key={developer.id}
-            id={developer.id}
-            image_background={developer.image_background}
-            name={developer.name}
-            count={developer.games_count}
-            description={developer.description}
-            />
-          ))}
-        </React.Fragment>
+      {visible.map((developer) => (
+        <DevCard
+          key={developer.id}
+          id={developer.id}
+          image_background={developer.image_background}
+          name={developer.name}
+          count={developer.games_count}
+          description={developer.description}
+        />
       ))}
-      <div ref={ref}>
-        {isFetchingNextPage ? <Spinner className="w-screen" label="Loading..." color="danger" size="3xl" /> : hasNextPage ? 'Load More' : 'No more developers'}
-      </div>
+    </div>
+    <div className="flex justify-center my-6">
+      {hasMore ? (
+        <Button color="danger" variant="flat" onPress={() => setVisibleCount((c) => c + PAGE_SIZE)}>
+          Load More
+        </Button>
+      ) : (
+        <p className="text-gray-500">No more developers</p>
+      )}
     </div>
     </>
   );

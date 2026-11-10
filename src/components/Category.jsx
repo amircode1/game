@@ -28,21 +28,21 @@ function Category() {
             aria-label="Game Category"
             variant="flat"
             >
-            <Link 
-                className="text-white flex justify-between hover:bg-default-200 items-center rounded-small p-2" 
+            <Link
+                className="text-white flex justify-between hover:bg-default-200 items-center rounded-small p-2"
                 to={"/category/action"} >Action<GiHeadshot className="text-3xl"/></Link>
-            <Link 
-                className="text-white flex justify-between hover:bg-default-200 items-center rounded-small p-2" 
-                to={"/category/arcade"} >Arcade<TbBrandAppleArcade className="text-3xl"/></Link>
-            <Link 
-                className="text-white flex justify-between hover:bg-default-200 items-center rounded-small p-2" 
-                to={"/category/role-playing-games-rpg"} >RPG<GiZeusSword className="text-3xl"/></Link>
-            <Link 
-                className="text-white flex justify-between hover:bg-default-200 items-center rounded-small p-2" 
+            <Link
+                className="text-white flex justify-between hover:bg-default-200 items-center rounded-small p-2"
                 to={"/category/shooter"} >Shooter<GiPistolGun className="text-3xl"/></Link>
-            <Link 
-                className="text-white flex justify-between hover:bg-default-200 items-center rounded-small p-2" 
+            <Link
+                className="text-white flex justify-between hover:bg-default-200 items-center rounded-small p-2"
+                to={"/category/mmorpg"} >MMORPG<GiZeusSword className="text-3xl"/></Link>
+            <Link
+                className="text-white flex justify-between hover:bg-default-200 items-center rounded-small p-2"
                 to={"/category/strategy"} >Strategy<PiStrategyDuotone className="text-3xl"/></Link>
+            <Link
+                className="text-white flex justify-between hover:bg-default-200 items-center rounded-small p-2"
+                to={"/category/moba"} >MOBA<TbBrandAppleArcade className="text-3xl"/></Link>
             </section>
         </ListboxWrapper>
     }>

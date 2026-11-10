@@ -8,6 +8,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import React from "react";
 
+const FEATURED_CATEGORIES = ['action', 'shooter', 'mmorpg', 'strategy', 'moba', 'battle-royale', 'action-rpg', 'fantasy'];
+
 function CategoryPage() {
     const sliderSettings = {
         infinite: true,
@@ -53,8 +55,10 @@ function CategoryPage() {
         ],
     };
 
-    // Use the new genres query
+    // FreeToGame has no genres endpoint; use a curated subset of the static
+    // category list to avoid firing dozens of requests at once.
     const { data: genres = [], isLoading: isLoadingGenres } = useGenres();
+    const featured = genres.filter((genre) => FEATURED_CATEGORIES.includes(genre.slug));
 
     if (isLoadingGenres) {
         return <Spinner className="flex items-center justify-center h-screen" label="Loading categories..." color="danger" size="3xl" />;
@@ -64,8 +68,8 @@ function CategoryPage() {
         <>
             <NavbarGame />
             <div className="flex justify-start items-center p-4 flex-col">
-                {genres.map((genre) => (
-                    <CategorySection key={genre.id} genre={genre} sliderSettings={sliderSettings} />
+                {featured.map((genre) => (
+                    <CategorySection key={genre.slug} genre={genre} sliderSettings={sliderSettings} />
                 ))}
             </div>
         </>
@@ -73,9 +77,9 @@ function CategoryPage() {
 }
 
 function CategorySection({ genre, sliderSettings }) {
-    const { data, isLoading, isError} = useGamesByCategory(genre.slug);
-    
-    const games = data?.pages.flat() || [];
+    const { data, isLoading, isError} = useGamesByCategory(genre.slug, 12);
+
+    const games = data?.pages?.flat() ?? [];
 
     let content;
     if (isLoading) {
@@ -87,12 +91,12 @@ function CategorySection({ genre, sliderSettings }) {
             <div className="p-2" key={game.id}>
                 <CardGame
                     id={game.id}
-                    name={game.name}
-                    background_image={game.background_image}
-                    released={game.released}
-                    price={game.price}
-                    rating={game.rating}
-                    slug={game.slug}
+                    name={game.title}
+                    background_image={game.thumbnail}
+                    released={game.release_date}
+                    price="Free"
+                    genre={game.genre}
+                    platform={game.platform}
                 />
             </div>
         ));

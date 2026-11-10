@@ -1,153 +1,160 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 
-const API_KEY = import.meta.env.VITE_API_KEY;
 const BASE_URL = import.meta.env.VITE_API_URL;
+const PAGE_SIZE = 12;
 
-const createApiUrl = (endpoint, params = {}) => {
-  const searchParams = new URLSearchParams({ key: API_KEY, ...params });
-  return `${BASE_URL}${endpoint}?${searchParams}`;
-};
-
-const fetchApi = async (url) => {
+const fetchApi = async (endpoint) => {
+  const response = await fetch(`${BASE_URL}${endpoint}`);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  const text = await response.text();
   try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    // Get the response text first
-    const text = await response.text();
-    
-    // Try to parse as JSON
-    try {
-      return JSON.parse(text);
-    } catch (e) {
-      throw new Error(`Invalid JSON response: ${text.slice(0, 100)}...`);
-    }
-  } catch (error) {
-    console.error('API Error:', error);
-    throw error;
+    return JSON.parse(text);
+  } catch {
+    throw new Error(`Invalid JSON response: ${text.slice(0, 100)}...`);
   }
 };
 
-export const useGames = (ordering = '-released', pageSize = 12) => {
+const slicePages = (all, pageCount, pageSize) => {
+  const pages = [];
+  const limit = Math.min(all.length, pageCount * pageSize);
+  for (let i = 0; i < limit; i += pageSize) {
+    pages.push(all.slice(i, i + pageSize));
+  }
+  return pages;
+};
+
+// FreeToGame returns the full list in a single response (no server-side
+// pagination), so infinite scroll is implemented by slicing client-side.
+const usePagedGames = (queryKey, endpoint, pageSize = PAGE_SIZE) => {
   return useInfiniteQuery({
-    queryKey: ['games', ordering],
-    queryFn: ({ pageParam = 1 }) => 
-      fetchApi(createApiUrl('/games', { ordering, page: pageParam, page_size: pageSize })),
-    getNextPageParam: (lastPage) => {
-      if (!lastPage.next) return undefined;
-      const nextUrl = new URL(lastPage.next);
-      return Number(nextUrl.searchParams.get('page'));
+    queryKey,
+    queryFn: () => fetchApi(endpoint),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.length * pageSize;
+      return loaded < lastPage.length ? allPages.length + 1 : undefined;
+    },
+    select: (data) => {
+      const all = data.pages[0] ?? [];
+      return {
+        pages: slicePages(all, data.pageParams.length, pageSize),
+        pageParams: data.pageParams,
+        total: all.length,
+        totalPages: Math.ceil(all.length / pageSize),
+      };
     },
   });
 };
 
-// Genres query
+export const useGames = (sortBy = 'relevance') => {
+  return usePagedGames(['games', sortBy], `/games?sort-by=${encodeURIComponent(sortBy)}`);
+};
+
+// FreeToGame has no genres endpoint; these are the valid `category` values.
+export const CATEGORIES = [
+  { slug: 'action', name: 'Action' },
+  { slug: 'shooter', name: 'Shooter' },
+  { slug: 'mmorpg', name: 'MMORPG' },
+  { slug: 'mmo', name: 'MMO' },
+  { slug: 'action-rpg', name: 'Action RPG' },
+  { slug: 'battle-royale', name: 'Battle Royale' },
+  { slug: 'strategy', name: 'Strategy' },
+  { slug: 'moba', name: 'MOBA' },
+  { slug: 'fantasy', name: 'Fantasy' },
+  { slug: 'sci-fi', name: 'Sci-Fi' },
+  { slug: 'open-world', name: 'Open World' },
+  { slug: 'survival', name: 'Survival' },
+  { slug: 'sandbox', name: 'Sandbox' },
+  { slug: 'anime', name: 'Anime' },
+  { slug: 'pvp', name: 'PvP' },
+  { slug: 'pve', name: 'PvE' },
+  { slug: 'mmofps', name: 'MMOFPS' },
+  { slug: 'fighting', name: 'Fighting' },
+  { slug: 'racing', name: 'Racing' },
+  { slug: 'sports', name: 'Sports' },
+  { slug: 'card', name: 'Card' },
+  { slug: 'social', name: 'Social' },
+  { slug: 'military', name: 'Military' },
+  { slug: 'tank', name: 'Tank' },
+  { slug: 'space', name: 'Space' },
+  { slug: 'superhero', name: 'Superhero' },
+  { slug: 'martial-arts', name: 'Martial Arts' },
+  { slug: 'flight', name: 'Flight' },
+  { slug: 'tower-defense', name: 'Tower Defense' },
+  { slug: '3d', name: '3D' },
+  { slug: '2d', name: '2D' },
+  { slug: 'pixel', name: 'Pixel' },
+  { slug: 'voxel', name: 'Voxel' },
+  { slug: 'zombie', name: 'Zombie' },
+];
+
 export const useGenres = () => {
   return useQuery({
     queryKey: ['genres'],
-    queryFn: () => fetchApi(createApiUrl('/genres')),
-    select: (data) => data.results
+    queryFn: async () => CATEGORIES,
+    staleTime: Infinity,
   });
 };
 
-export const useGamesByCategory = (genreSlug, pageSize = 12) => {
-  return useInfiniteQuery({
-    queryKey: ['category', genreSlug],
-    queryFn: ({ pageParam = 1 }) => 
-      fetchApi(createApiUrl('/games', {
-        genres: genreSlug,
-        page: pageParam,
-        page_size: pageSize
-      })),
-    getNextPageParam: (lastPage) => {
-      if (!lastPage.next) return undefined;
-      const totalPages = Math.ceil(lastPage.count / pageSize);
-      const nextPage = lastPage.page + 1;
-      return nextPage <= totalPages ? nextPage : undefined;
-    },
-    select: (data) => ({
-      pages: data.pages.map(page => page.results),
-      pageParams: data.pageParams,
-      totalPages: Math.ceil(data.pages[0].count / pageSize)
-    })
-  });
+export const useGamesByCategory = (category, pageSize = PAGE_SIZE) => {
+  return usePagedGames(
+    ['category', category],
+    `/games?category=${encodeURIComponent(category)}`,
+    pageSize
+  );
 };
 
-export const useGamesBySingelCategory = (genreSlug, pageSize = 12) => {
-  return useInfiniteQuery({
-    queryKey: ['category', genreSlug],
-    queryFn: ({ pageParam = 1 }) => 
-      fetchApi(createApiUrl('/games', {
-        genres: genreSlug,
-        page: pageParam,
-        page_size: pageSize
-      })),
-      getNextPageParam: (lastPage) => {
-        if (!lastPage.next) return undefined;
-        const nextUrl = new URL(lastPage.next);
-        return Number(nextUrl.searchParams.get('page'));
-      },
-  });
-};
+export const useGamesBySingelCategory = useGamesByCategory;
 
-
-// Search games query
 export const useSearchGames = (searchQuery) => {
+  const query = (searchQuery ?? '').trim().toLowerCase();
   return useQuery({
-    queryKey: ['games', 'search', searchQuery],
-    queryFn: () => 
-      fetchApi(createApiUrl('/games', {
-        search: searchQuery,
-        page: 1,
-        page_size: 10
-      })),
-    select: (data) => data.results,
-    enabled: !!searchQuery
-  });
-};
-
-// Game details query
-export const useGameDetails = (gameSlug) => {
-  return useQuery({
-    queryKey: ['game', gameSlug],
-    queryFn: () => fetchApi(createApiUrl(`/games/${gameSlug}`)),
-    enabled: !!gameSlug
-  });
-};
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  params: {
-    key: API_KEY,
-  },
-});
-
-const fetchDevelopers = async (page = 1, pageSize = 12) => {
-  try {
-    const { data } = await api.get('/developers', {
-      params: {
-        page,
-        page_size: pageSize,
-      },
-    });
-    return data;
-  } catch (error) {
-    console.error('Error fetching developers:', error);
-    throw new Error(error.response?.data?.message || 'Failed to fetch developers');
-  }
-};
-
-export const useDevelopers = (pageSize = 12) => {
-  return useInfiniteQuery({
-    queryKey: ['developers'],
-    queryFn: ({ pageParam = 1 }) => fetchDevelopers(pageParam, pageSize),
-    getNextPageParam: (lastPage) => {
-      if (!lastPage || !lastPage.next) return undefined;
-      const nextUrl = new URL(lastPage.next);
-      return Number(nextUrl.searchParams.get('page'));
+    queryKey: ['games', 'search', query],
+    queryFn: async () => {
+      const all = await fetchApi('/games');
+      return all.filter((game) =>
+        [game.title, game.genre, game.platform, game.publisher, game.developer]
+          .filter(Boolean)
+          .some((field) => field.toLowerCase().includes(query))
+      );
     },
+    enabled: query.length > 0,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useGameDetails = (gameId) => {
+  return useQuery({
+    queryKey: ['game', String(gameId)],
+    queryFn: () => fetchApi(`/game?id=${encodeURIComponent(gameId)}`),
+    enabled: !!gameId,
+  });
+};
+
+// FreeToGame has no developers endpoint; derive the list from the games list.
+export const useDevelopers = () => {
+  return useQuery({
+    queryKey: ['developers'],
+    queryFn: async () => {
+      const all = await fetchApi('/games');
+      const map = new Map();
+      for (const game of all) {
+        const name = (game.developer ?? '').trim();
+        if (!name) continue;
+        const entry = map.get(name) ?? {
+          id: name,
+          name,
+          games_count: 0,
+          image_background: game.thumbnail,
+          description: `Publisher: ${game.publisher ?? 'Unknown'}`,
+        };
+        entry.games_count += 1;
+        map.set(name, entry);
+      }
+      return [...map.values()].sort((a, b) => b.games_count - a.games_count);
+    },
+    staleTime: Infinity,
   });
 };

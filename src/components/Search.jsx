@@ -42,12 +42,12 @@ function Search() {
             <div key={game.id} className="dark p-2 border-b border-gray-700 hover:bg-gray-800 cursor-pointer">
                 <CardGame
                     id={game.id}
-                    name={game.name}
-                    background_image={game.background_image}
-                    released={game.released}
-                    price={game.price}
-                    rating={game.rating}
-                    slug={game.slug}
+                    name={game.title}
+                    background_image={game.thumbnail}
+                    released={game.release_date}
+                    price="Free"
+                    genre={game.genre}
+                    platform={game.platform}
                 />
             </div>
         ));
@@ -67,7 +67,7 @@ function Search() {
             {isDropdownOpen && searchResults.length > 0 && createPortal(
                 <div 
                     className="fixed inset-0 bg-transparent z-[9999]"
-                    onPress={() => setIsDropdownOpen(false)}
+                    onClick={() => setIsDropdownOpen(false)}
                 >
                     <div 
                         className="absolute bg-gray-900 rounded-md shadow-lg overflow-hidden"
@@ -78,7 +78,7 @@ function Search() {
                             maxWidth: '350px', 
                             maxHeight: '500px'
                         }}
-                        onPress={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <div className="max-h-96 overflow-y-auto flex items-center flex-col">
                             {content}

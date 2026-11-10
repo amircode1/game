@@ -14,7 +14,7 @@ function App() {
   return (
     <div className='dark'>
       <Routes>
-        <Route path="/games/:slug" element={<FullCardDetail />} />
+        <Route path="/games/:id" element={<FullCardDetail />} />
         <Route path='/developers' element={<DevPage/>} />
         <Route path='/login' element={<LoginPage/>} />
         <Route path='/*' element={<HomePage/>} />

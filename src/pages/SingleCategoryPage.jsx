@@ -42,16 +42,16 @@ function SingleCategoryPage() {
         // Ensure data.pages exists and is an array before mapping
         content = data.pages.map((page, pageIndex) => (
             <React.Fragment key={pageIndex}>
-                {page.results.map((card) => (
+                {page.map((card) => (
                     <div key={card.id} className='flex justify-center items-center'>
-                        <CardGame 
+                        <CardGame
                             id={card.id}
-                            name={card.name}
-                            background_image={card.background_image}
-                            released={card.released}
-                            price={card.price}
-                            rating={card.rating}
-                            slug={card.slug}
+                            name={card.title}
+                            background_image={card.thumbnail}
+                            released={card.release_date}
+                            price="Free"
+                            genre={card.genre}
+                            platform={card.platform}
                         />
                     </div>
                 ))}

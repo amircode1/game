@@ -36,7 +36,7 @@ function ShoppingCard() {
                             <div>
                                 <p className="text-white font-bold">{item.name}</p>
                                 <p className="text-white">Quantity: {item.quantity}</p>
-                                <p className="text-white">Price: ${item.price}</p>
+                                <p className="text-white">Price: {item.price === "Free" || !Number.isFinite(Number(item.price)) ? "Free" : `$${item.price}`}</p>
                             </div>
                             <Button
                                 auto

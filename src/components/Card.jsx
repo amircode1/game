@@ -1,48 +1,105 @@
-import { Card, CardHeader, CardBody, Button } from "@nextui-org/react";
+import { Card, CardBody, Button, Chip } from "@nextui-org/react";
 import { useState } from "react";
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaCheck, FaCalendarAlt, FaGamepad } from 'react-icons/fa';
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { addToCart } from "../store/shoppingCardSlice";
 
-
 function CardGame(props) {
-    const [hover, setHover] = useState(false);
+    const [added, setAdded] = useState(false);
     const dispatch = useDispatch();
 
-    const backgroundImage = props.background_image || "https://via.placeholder.com/270x200";
+    const id = props.id;
+    const name = props.name ?? props.title;
+    const image = props.background_image ?? props.thumbnail;
+    const released = props.released ?? props.release_date;
+    const genre = props.genre;
+    const platform = props.platform;
+    const price = props.price ?? "Free";
+
+    const backgroundImage = image || "https://via.placeholder.com/400x225?text=No+Image";
+
+    const cartItem = {
+        id,
+        name,
+        price,
+        background_image: backgroundImage,
+    };
+
+    const handleAddToCart = () => {
+        dispatch(addToCart(cartItem));
+        setAdded(true);
+        window.setTimeout(() => setAdded(false), 1500);
+    };
+
     return (
         <Card
-            key={props.id}
-            className="py-4 pb-2 min-w-[230px] max-w-[300px] border-2 border-transparent hover:border-red-500 transition-all duration-300 ease-in-out shadow-md hover:shadow-lg"
-            style={{ minWidth: "230px", height: "368px", maxWidth: "300px" }}
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
+            className="group w-full max-w-[320px] border border-white/5 bg-[#1b1b1f] hover:border-red-500/60 transition-all duration-300 ease-out shadow-lg hover:shadow-red-500/10 hover:-translate-y-1 overflow-hidden"
         >
-            <CardHeader className="pb-0 pt-2 flex-col items-start">
+            {/* Image with hover overlay */}
+            <Link to={`/games/${id}`} className="relative block overflow-hidden aspect-[16/10]">
                 <img
-                    className="object-cover rounded-xl min-w-[230px] w-[280px] h-[200px]"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                     src={backgroundImage}
+                    alt={name}
+                    loading="lazy"
                 />
-            </CardHeader>
-            <CardBody className="overflow-visible py-2 pb-2">
-                <h4 className="font-bold text-large truncate">{props.name}</h4>
-                <small className="text-default-500">{props.released || "Release date unknown"}</small>
-                <h4 className="text-default-900 uppercase font-bold">{props.price || "Free"}</h4>
-                <Button
-                    className="absolute bottom-2 right-2"
-                    isIconOnly
-                    color="danger"
-                    variant="ghost"
-                    style={{ color: hover ? 'white' : 'red' }}
-                    onPress={() => dispatch(addToCart(props))}
-                >
-                    <FaPlus />
-                </Button>
-                <p className="text-default-700 font-sans">{props.rating || "No rating"} ⭐</p>
-                <Link to={`/games/${props.slug}`} className="font-sans text-red-500">
-                    View more...
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1b1b1f] via-[#1b1b1f]/20 to-transparent" />
+                <div className="absolute top-2 left-2 flex gap-1">
+                    {genre && (
+                        <Chip size="sm" className="bg-black/70 backdrop-blur-sm text-white border border-white/10">
+                            {genre}
+                        </Chip>
+                    )}
+                </div>
+                <div className="absolute top-2 right-2">
+                    <Chip size="sm" color="success" variant="flat" className="bg-black/70 backdrop-blur-sm font-bold">
+                        {price}
+                    </Chip>
+                </div>
+            </Link>
+
+            <CardBody className="gap-2 p-4">
+                <Link to={`/games/${id}`} className="block">
+                    <h4 className="font-bold text-lg text-white leading-snug line-clamp-1 group-hover:text-red-400 transition-colors">
+                        {name}
+                    </h4>
                 </Link>
+
+                <div className="flex items-center gap-3 text-xs text-gray-400">
+                    {released && (
+                        <span className="flex items-center gap-1">
+                            <FaCalendarAlt className="text-[10px]" />
+                            {released}
+                        </span>
+                    )}
+                    {platform && (
+                        <span className="flex items-center gap-1 truncate">
+                            <FaGamepad className="text-[10px]" />
+                            {platform}
+                        </span>
+                    )}
+                </div>
+
+                <div className="flex items-center justify-between mt-1 pt-3 border-t border-white/5">
+                    <Link
+                        to={`/games/${id}`}
+                        className="text-sm font-semibold text-red-500 hover:text-red-400 transition-colors"
+                    >
+                        View details →
+                    </Link>
+                    <Button
+                        isIconOnly
+                        size="sm"
+                        color={added ? "success" : "danger"}
+                        variant={added ? "solid" : "flat"}
+                        aria-label={added ? "Added to cart" : "Add to cart"}
+                        onPress={handleAddToCart}
+                        className="transition-all"
+                    >
+                        {added ? <FaCheck /> : <FaPlus />}
+                    </Button>
+                </div>
             </CardBody>
         </Card>
     );
